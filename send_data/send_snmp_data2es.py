@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 向es中写入snmp仿真数据
-数据模板来源(json文件)必须要是经过fiter_data过滤后的(数据形式为[{},{},{}])
-因为有多个数据源,json文件统一都放在send_data/json目录下
+数据模板来源(.txt文件)必须要是经过fiter_data过滤后的
+因为有多个数据源,.txt文件统一都放在send_data/data目录下
 """
 import os
 import sys
@@ -16,19 +16,20 @@ from elasticsearch.exceptions import *
 
 # ----------- 需要修改的参数 -----------
 es = Elasticsearch('192.168.10.201')
-index_name = 'cc-gossip-4a859fff6e5c4521aab187eee1cfceb8-2018.07.25'
+index_name = 'cc-gossip-4a859fff6e5c4521aab187eee1cfceb8-' + time.strftime('%Y.%m.%d')
 data_type = 'snmp'
-json_file_name = 'snmp.data'
+data_file_name = 'snmp.data'
+request_body_size = 100
 # ------------------------------------
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
 CURRENT_DIR = reduce(lambda x, y: os.path.dirname(x), range(1), os.path.abspath(__file__))
-JSON_PATH = os.path.join(CURRENT_DIR, 'jsons')
-if not os.path.exists(JSON_PATH):
-    os.makedirs(JSON_PATH)
-JSON_FILE_PATH = os.path.join(JSON_PATH, json_file_name + '.json')
+DATA_DIR = os.path.join(CURRENT_DIR, 'data')
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
+DATA_FILE_PATH = os.path.join(DATA_DIR, data_file_name + '.txt')
 
 
 class SendSnmpData2Es(object):
@@ -36,9 +37,25 @@ class SendSnmpData2Es(object):
     def __init__(self):
         pass
 
-    def send_data2es(self):
-        doc_list = self.read_jsonfile()
-        current_doc_list = self.make_data(doc_list)
+    def execute_task(self):
+        with open(DATA_FILE_PATH, 'r') as f:
+            doc_list = []
+            line = f.readline()
+            while line:
+                line = line.strip('\n')
+                doc_content = json.loads(line, encoding='utf-8')
+                doc_list.append(doc_content)
+                if len(doc_list) >= request_body_size:
+                    current_doc_list = self.make_data(doc_list)
+                    self.send_data2es(current_doc_list)
+                    doc_list = []
+                line = f.readline()
+            if doc_list:
+                current_doc_list = self.make_data(doc_list)
+                self.send_data2es(current_doc_list)
+
+    @staticmethod
+    def send_data2es(current_doc_list):
         body = []
         for doc in current_doc_list:
             body.append({
@@ -56,13 +73,6 @@ class SendSnmpData2Es(object):
                 print('elasticsearch connection refused!')
             else:
                 print('system err')
-
-    @staticmethod
-    def read_jsonfile():
-        with open(JSON_FILE_PATH, 'r') as load_f:
-            doc_list = json.load(load_f, encoding=None)
-            print('finish reading, doc count: %s' % (len(doc_list)))
-            return doc_list
 
     @staticmethod
     def make_data(doc_list):
@@ -86,6 +96,29 @@ class SendSnmpData2Es(object):
                 mem_utilization = round(random.uniform(30, 40), 2)
             doc['snmp']['cpuUtilization'] = cpu_utilization
             doc['snmp']['memUtilization'] = mem_utilization
+            if_table_stats = doc['snmp']['ifTableStats']
+            current_if_table_stats = []
+            for each_if_stats in if_table_stats:
+                if time.strftime('%H') in ['9', '10', '11', '14', '15', '16']:
+                    in_bytes = int(random.uniform(5000, 8000))
+                    out_bytes = int(random.uniform(30000, 50000))
+                    in_pkts = int(random.uniform(80, 150))
+                    out_pkts = int(random.uniform(200, 500))
+                elif time.strftime('%H') in ['0', '1', '2', '3', '4', '5', '6']:
+                    in_bytes = int(random.uniform(100, 500))
+                    out_bytes = int(random.uniform(800, 1500))
+                    in_pkts = int(random.uniform(10, 20))
+                    out_pkts = int(random.uniform(10, 20))
+                else:
+                    in_bytes = int(random.uniform(3000, 5000))
+                    out_bytes = int(random.uniform(10000, 20000))
+                    in_pkts = int(random.uniform(50, 80))
+                    out_pkts = int(random.uniform(10, 30))
+                each_if_stats['ifInOctets'] = in_bytes
+                each_if_stats['ifOutOctets'] = out_bytes
+                each_if_stats['ifInNUcastPkts'] = in_pkts
+                each_if_stats['ifOutUcastPkts'] = out_pkts
+                current_if_table_stats.append(each_if_stats)
 
             current_doc_list.append(doc)
         return current_doc_list
@@ -93,4 +126,4 @@ class SendSnmpData2Es(object):
 
 if __name__ == "__main__":
     send_snmp_data2es = SendSnmpData2Es()
-    send_snmp_data2es.send_data2es()
+    send_snmp_data2es.execute_task()

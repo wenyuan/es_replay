@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-过滤从es中导出的数据(存在json文件中数据形式必须为[{},{},{}])
+过滤通过download_data/es_export.py脚本从es中导出的数据
 因为从es中导出的数据可能是重复的
 对于snmp数据,以字段MachineIP作为唯一关键字,去除重复MachineIP的数据
-筛选过后,再次以[{},{},{}]形式转成字符串后写入json文件
+筛选过后,再次按行导出,每一行为一个doc的数据
 """
 import os
 import sys
@@ -12,16 +12,16 @@ import json
 from functools import reduce
 
 # ----------- 需要修改的参数 -----------
-src_json_file_name = 'snmp'
-dst_json_file_name = 'snmp.data'
+src_text_file_name = 'snmp'
+dst_text_file_name = 'snmp.data'
 # ------------------------------------
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
 CURRENT_DIR = reduce(lambda x, y: os.path.dirname(x), range(1), os.path.abspath(__file__))
-SRC_JSON_FILE_PATH = os.path.join(CURRENT_DIR, src_json_file_name + '.json')
-DST_JSON_FILE_PATH = os.path.join(CURRENT_DIR, dst_json_file_name + '.json')
+SRC_TEXT_FILE_PATH = os.path.join(CURRENT_DIR, src_text_file_name + '.txt')
+DST_TEXT_FILE_PATH = os.path.join(CURRENT_DIR, dst_text_file_name + '.txt')
 
 
 class FilterSnmpData(object):
@@ -30,34 +30,32 @@ class FilterSnmpData(object):
         pass
 
     def filter_data(self):
-        doc_list = self.read_jsonfile()
-        filtered_doc_list = self.clean_data(doc_list)
-        self.write_jsonfile(filtered_doc_list)
+        with open(SRC_TEXT_FILE_PATH, 'r') as f:
+            before_doc_count = 0
+            now_doc_count = 0
+            machine_ip_list = []
+            line = f.readline()
+            while line:
+                before_doc_count += 1
+                line = line.strip('\n')
+                doc_content = json.loads(line, encoding='utf-8')
+                machine_ip = doc_content['snmp']['MachineIP']
+                if machine_ip in machine_ip_list:
+                    print('%s existed' % machine_ip)
+                    line = f.readline()
+                    continue
+                self.write2file(line + '\n')
+                machine_ip_list.append(machine_ip)
+                now_doc_count += 1
+                line = f.readline()
+            print('\nMachineIP: %s' % machine_ip_list)
+            print('result: before doc count: %s, now doc count: %s' % (before_doc_count, now_doc_count))
+            print('success in finishing... %s' % DST_TEXT_FILE_PATH)
 
     @staticmethod
-    def read_jsonfile():
-        with open(SRC_JSON_FILE_PATH, 'r') as load_f:
-            doc_list = json.load(load_f, encoding=None)
-            print('finish reading, doc count: %s' % (len(doc_list)))
-            return doc_list
-
-    @staticmethod
-    def clean_data(doc_list):
-        filtered_doc_list = []
-        machine_ip_list = []
-        for doc in doc_list:
-            if doc['snmp']['MachineIP'] in machine_ip_list:
-                continue
-            filtered_doc_list.append(doc)
-            machine_ip_list.append(doc['snmp']['MachineIP'])
-        print('finish cleaning, now doc count: %s' % (len(filtered_doc_list)))
-        return filtered_doc_list
-
-    @staticmethod
-    def write_jsonfile(content):
-        with open(DST_JSON_FILE_PATH, "w") as f:
-            json.dump(content, f, encoding="UTF-8", ensure_ascii=False)
-            print('success in finishing... %s' % DST_JSON_FILE_PATH)
+    def write2file(content):
+        with open(DST_TEXT_FILE_PATH, "a") as f:
+            f.write(content)
 
 
 if __name__ == "__main__":
