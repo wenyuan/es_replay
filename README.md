@@ -47,6 +47,9 @@ step3 仿真数据构造和写入： 将上面过滤后导出的.json文件移�
 * 按照<font color=#0099ff>send_data</font>目录下的<font color=orange>send_snmp_data2dawn.py</font>和<font color=orange>send_snmp_data2es.py</font>来编写数据构造和写入逻辑
 
 ## 提交记录
+* 2018.07.31
+  * 修改文件处理方式，减少内存开销
+  * 增加业务仿真数据
 * 2018.07.25
   * 初次提交
   * snmp数据的处理

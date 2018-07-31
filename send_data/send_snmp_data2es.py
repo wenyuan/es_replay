@@ -16,7 +16,7 @@ from elasticsearch.exceptions import *
 
 # ----------- 需要修改的参数 -----------
 es = Elasticsearch('192.168.10.201')
-index_name = 'cc-gossip-4a859fff6e5c4521aab187eee1cfceb8-' + time.strftime('%Y.%m.%d')
+index_name = 'cc-gossip-snmp-4a859fff6e5c4521aab187eee1cfceb8-' + time.strftime('%Y.%m.%d')
 data_type = 'snmp'
 data_file_name = 'snmp.data'
 request_body_size = 100

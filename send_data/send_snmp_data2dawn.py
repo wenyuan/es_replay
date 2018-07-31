@@ -17,7 +17,7 @@ from functools import reduce
 dawn_host = '192.168.10.197'
 dawn_port = '8359'
 data_source = 'gossip'
-token = 'internal'
+token = '4a859fff6e5c4521aab187eee1cfceb8'
 data_file_name = 'snmp.data'
 request_body_size = 100
 # ------------------------------------
@@ -110,7 +110,7 @@ class SendSnmpData2Dawn(object):
                 each_if_stats['ifOutUcastPkts'] = out_pkts
                 current_if_table_stats.append(each_if_stats)
 
-            current_doc_list.append(doc)
+            current_doc_list.append(doc['snmp'])
         return current_doc_list
 
 
