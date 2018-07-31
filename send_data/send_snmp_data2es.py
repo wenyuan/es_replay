@@ -4,6 +4,8 @@
 向es中写入snmp仿真数据
 数据模板来源(.txt文件)必须要是经过fiter_data过滤后的
 因为有多个数据源,.txt文件统一都放在send_data/data目录下
+
+*/1 * * * *  python /home/wenyuan/es_replay/send_data/send_snmp_data2es.py >/dev/null 2>&1
 """
 import os
 import sys
@@ -16,6 +18,7 @@ from elasticsearch.exceptions import *
 
 # ----------- 需要修改的参数 -----------
 es = Elasticsearch('192.168.10.201')
+token = '4a859fff6e5c4521aab187eee1cfceb8'
 index_name = 'cc-gossip-snmp-4a859fff6e5c4521aab187eee1cfceb8-' + time.strftime('%Y.%m.%d')
 data_type = 'snmp'
 data_file_name = 'snmp.data'
@@ -81,7 +84,7 @@ class SendSnmpData2Es(object):
         timestamp_in_seconds = int(t)
         timestamp_in_millisecond = int(round(t * 1000))
         for doc in doc_list:
-            doc['guid'] = "internal"
+            doc['guid'] = token
             doc['@timestamp'] = timestamp_in_millisecond
             doc['dawn_ts'] = timestamp_in_millisecond * 1000
             # todo...符合24h内正态分布,先ugly design
