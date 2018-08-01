@@ -79,25 +79,35 @@ class SendSqyData2Es(object):
             node_ip = node['node_ip']
             node_name = node['node_name']
             if time.strftime('%H') in ['9', '10', '11', '14', '15', '16']:
-                cpu_utilization = round(random.uniform(60, 90), 2)
+                cpu_utilization = round(random.uniform(60, 70), 2)
                 mem_utilization = round(random.uniform(50, 70), 2)
-                root_disk_utilization = round(random.uniform(50, 70), 2)
                 res_time = round(random.uniform(200, 400), 2)
-                processing_speed = '-'
             elif time.strftime('%H') in ['0', '1', '2', '3', '4', '5', '6']:
                 cpu_utilization = round(random.uniform(20, 30), 2)
                 mem_utilization = round(random.uniform(30, 40), 2)
-                root_disk_utilization = round(random.uniform(50, 70), 2)
                 res_time = round(random.uniform(100, 200), 2)
-                processing_speed = '-'
             else:
                 cpu_utilization = round(random.uniform(30, 60), 2)
                 mem_utilization = round(random.uniform(30, 50), 2)
-                root_disk_utilization = round(random.uniform(50, 70), 2)
                 res_time = round(random.uniform(200, 300), 2)
-                processing_speed = '-'
+            # 根据节点名特殊处理响应时间/处理速度
             if node_name in ['heka_log_processor', 'fair']:
-                processing_speed = int(random.uniform(1, 2) * 1000)
+                processing_speed = str(int(random.uniform(1, 2) * 1000)) + '/s'
+                res_time = '-'
+            else:
+                processing_speed = '-'
+                res_time = str(res_time) + 'ms'
+            # 根据节点名特殊处理磁盘使用率
+            if node_name in ['heka_log_processor', 'fair']:
+                root_disk_utilization = 30 + int(time.strftime('%H'))
+            elif node_name in ['es1', 'es2', 'es3', 'es4', 'es5', 'es6']:
+                root_disk_utilization = 40 + int(time.strftime('%d'))
+            else:
+                root_disk_utilization = 32
+            # 给某一个es告警
+            if node_name in ['es5']:
+                cpu_utilization = round(random.uniform(80, 90), 2)
+                mem_utilization = round(random.uniform(80, 90), 2)
             survive_time = get_time_span()
             doc = copy.deepcopy(doc_template)
             doc['@timestamp'] = current_timestamp
@@ -107,8 +117,8 @@ class SendSqyData2Es(object):
                 'cpu_utilization': cpu_utilization,
                 'mem_utilization': mem_utilization,
                 'root_disk_utilization': root_disk_utilization,
-                'res_time': str(res_time) + 'ms',
-                'processing_speed': str(processing_speed),
+                'res_time': res_time,
+                'processing_speed': processing_speed,
                 'survive_time': survive_time
             }
             doc_list.append(doc)
