@@ -100,8 +100,9 @@ class SendSnmpData2Es(object):
             doc['snmp']['cpuUtilization'] = cpu_utilization
             doc['snmp']['memUtilization'] = mem_utilization
             if_table_stats = doc['snmp']['ifTableStats']
-            current_if_table_stats = []
             for each_if_stats in if_table_stats:
+                if each_if_stats['ifOperStatus'] != 1:
+                    continue
                 if time.strftime('%H') in ['9', '10', '11', '14', '15', '16']:
                     in_bytes = int(random.uniform(5000, 8000))
                     out_bytes = int(random.uniform(30000, 50000))
@@ -121,7 +122,11 @@ class SendSnmpData2Es(object):
                 each_if_stats['ifOutOctets'] = out_bytes
                 each_if_stats['ifInNUcastPkts'] = in_pkts
                 each_if_stats['ifOutUcastPkts'] = out_pkts
-                current_if_table_stats.append(each_if_stats)
+
+            if_number = doc['snmp']['ifNumber']
+            ipnet_table_stats = doc['snmp']['ipNetToMediaTableStats']
+            for index, each_ifnet in enumerate(ipnet_table_stats):
+                each_ifnet['ipNetToMediaIfIndex'] = min(index + 1, if_number)
 
             current_doc_list.append(doc)
         return current_doc_list
