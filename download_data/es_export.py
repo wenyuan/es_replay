@@ -41,6 +41,7 @@ class EsExport(object):
             "size": doc_size
         }
         try:
+            print('query from es, please wait...')
             response = es.search(index=index_name,
                                  body=query_body,
                                  request_timeout=300)
