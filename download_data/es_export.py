@@ -52,8 +52,8 @@ class EsExport(object):
                 process_bar = ShowProcess(len(doc_hits))
                 print('start to write to file:')
                 for hit in doc_hits:
-                    content = json.dumps(hit['_source'], encoding="utf-8", ensure_ascii=False) + '\n'
-                    self.write2file(content)
+                    line = json.dumps(hit['_source'], encoding="utf-8", ensure_ascii=False)
+                    self.write2file(line + '\n')
                     process_bar.show_process()
                 process_bar.close('success in finishing... %s' % OUTPUT_FILE_PATH)
         except TransportError as e:

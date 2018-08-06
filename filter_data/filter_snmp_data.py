@@ -9,11 +9,16 @@
 import os
 import sys
 import json
+import random
+import socket
+import struct
 from functools import reduce
 
 # ----------- 需要修改的参数 -----------
 src_text_file_name = 'snmp'
 dst_text_file_name = 'snmp.data'
+pressure_test_mode = True    # 压力测试模式下,指定数据数目,源数据经过去重后如条数不足,会自动生成
+pressure_test_number = 200
 # ------------------------------------
 
 reload(sys)
@@ -48,9 +53,24 @@ class FilterSnmpData(object):
                 machine_ip_list.append(machine_ip)
                 now_doc_count += 1
                 line = f.readline()
+            if pressure_test_mode:
+                while now_doc_count < pressure_test_number:
+                    machine_ip = self.gen_random_ip()
+                    while machine_ip in machine_ip_list:
+                        machine_ip = self.gen_random_ip()
+                    doc_content['snmp']['MachineIP'] = self.gen_random_ip()
+                    line = json.dumps(doc_content, encoding="utf-8", ensure_ascii=False)
+                    self.write2file(line + '\n')
+                    machine_ip_list.append(machine_ip)
+                    now_doc_count += 1
+
             print('\nMachineIP: %s' % machine_ip_list)
             print('result: before doc count: %s, now doc count: %s' % (before_doc_count, now_doc_count))
             print('success in finishing... %s' % DST_TEXT_FILE_PATH)
+
+    @staticmethod
+    def gen_random_ip():
+        return socket.inet_ntoa(struct.pack('>I', random.randint(1, 0xffffffff)))
 
     @staticmethod
     def write2file(content):
