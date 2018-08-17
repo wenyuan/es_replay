@@ -18,7 +18,7 @@ from functools import reduce
 src_text_file_name = 'snmp'
 dst_text_file_name = 'snmp.data'
 pressure_test_mode = True    # 压力测试模式下,指定数据数目,源数据经过去重后如条数不足,会自动生成
-pressure_test_number = 200
+pressure_test_number = 80
 # ------------------------------------
 
 reload(sys)
