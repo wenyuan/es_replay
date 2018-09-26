@@ -7,12 +7,14 @@
 筛选过后,再次按行导出,每一行为一个doc的数据
 """
 import os
-import sys
 import json
 import random
 import socket
 import struct
 from functools import reduce
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 # ----------- 需要修改的参数 -----------
 src_text_file_name = 'snmp'
@@ -20,9 +22,6 @@ dst_text_file_name = 'snmp.data'
 pressure_test_mode = True    # 压力测试模式下,指定数据数目,源数据经过去重后如条数不足,会自动生成
 pressure_test_number = 80
 # ------------------------------------
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 CURRENT_DIR = reduce(lambda x, y: os.path.dirname(x), range(1), os.path.abspath(__file__))
 SRC_TEXT_FILE_PATH = os.path.join(CURRENT_DIR, src_text_file_name + '.txt')

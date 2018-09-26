@@ -8,12 +8,14 @@
 */1 * * * *  python /home/wenyuan/es_replay/send_data/send_snmp_data2dawn.py >/dev/null 2>&1
 """
 import os
-import sys
 import json
 import time
 import random
 import requests
 from functools import reduce
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 # ----------- 需要修改的参数 -----------
 dawn_host = '192.168.10.197'
@@ -23,9 +25,6 @@ token = '4a859fff6e5c4521aab187eee1cfceb8'
 data_file_name = 'snmp.data'
 request_body_size = 100
 # ------------------------------------
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 DAWN_URL = "http://{host}:{port}/{data_source}/token/{token}".format(host=dawn_host, port=dawn_port,
                                                                      data_source=data_source, token=token)

@@ -8,13 +8,15 @@
 */1 * * * *  python /home/wenyuan/es_replay/send_data/send_snmp_data2es.py >/dev/null 2>&1
 """
 import os
-import sys
 import json
 import time
 import random
 from functools import reduce
 from elasticsearch import Elasticsearch, helpers
 from elasticsearch.exceptions import *
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 # ----------- 需要修改的参数 -----------
 es = Elasticsearch('192.168.10.201')
@@ -24,9 +26,6 @@ data_type = 'snmp'
 data_file_name = 'snmp.data'
 request_body_size = 100
 # ------------------------------------
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 CURRENT_DIR = reduce(lambda x, y: os.path.dirname(x), range(1), os.path.abspath(__file__))
 DATA_DIR = os.path.join(CURRENT_DIR, 'data')

@@ -6,12 +6,14 @@
 
 */1 * * * *  python /home/wenyuan/es_replay/send_data/send_heka_data2es.py >/dev/null 2>&1
 """
-import sys
 import copy
 import time
 import random
 from elasticsearch import Elasticsearch, helpers
 from elasticsearch.exceptions import *
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 # ----------- 需要修改的参数 -----------
 es = Elasticsearch('192.168.10.201')
@@ -19,9 +21,6 @@ token = '4a859fff6e5c4521aab187eee1cfceb8'
 index_name = 'cc-heka_dawn-4a859fff6e5c4521aab187eee1cfceb8-' + time.strftime('%Y.%m.%d')
 data_type = 'log'
 # ------------------------------------
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 doc_template = {
     'type': 'log',

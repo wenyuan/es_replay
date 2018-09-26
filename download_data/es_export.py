@@ -6,11 +6,13 @@
 开发测试用,如果数据量很大或者涉及到深度分页,请采用scroll-api
 """
 import os
-import sys
 import json
 from functools import reduce
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import *
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 # ----------- 需要修改的参数 -----------
 es = Elasticsearch('127.0.0.1')
@@ -19,9 +21,6 @@ output_file_name = 'snmp'
 doc_from = 0
 doc_size = 5000
 # ------------------------------------
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 CURRENT_DIR = reduce(lambda x, y: os.path.dirname(x), range(1), os.path.abspath(__file__))
 OUTPUT_FILE_PATH = os.path.join(CURRENT_DIR, output_file_name + '.txt')
