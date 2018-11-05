@@ -37,8 +37,11 @@ doc_template = {
         "web_perf": [  # nested结构
             {
                 "code": 200,
-                "name": """\u767e\u5ea6""",
+                "name": "百度",
                 "url": "www.baidu.com",
+                "ip": "180.97.33.108",
+                "region": "江苏省南京市",
+                "isp": "电信",
                 "dom_download_time": 35,
                 "dom_ready_time": 1380,
                 "white_screen_time": 1380,
@@ -50,8 +53,11 @@ doc_template = {
                 "page_download_time": 8
             }, {
                 "code": 200,
-                "name": """\u817e\u8baf""",
+                "name": "腾讯",
                 "url": "www.qq.com",
+                "ip": "61.129.7.47",
+                "region": "上海市上海市",
+                "isp": "电信",
                 "dom_download_time": 35,
                 "dom_ready_time": 1380,
                 "white_screen_time": 1380,
