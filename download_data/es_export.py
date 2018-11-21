@@ -11,64 +11,60 @@ from functools import reduce
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import *
 import sys
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
 # ----------- 需要修改的参数 -----------
-es = Elasticsearch('127.0.0.1')
+es_host = '127.0.0.1'
 index_name = 'cc-gossip-internal-2018.07.31'
-output_file_name = 'snmp'
+output_file_name = 'snmp.txt'
 doc_from = 0
 doc_size = 5000
 # ------------------------------------
 
 CURRENT_DIR = reduce(lambda x, y: os.path.dirname(x), range(1), os.path.abspath(__file__))
-OUTPUT_FILE_PATH = os.path.join(CURRENT_DIR, output_file_name + '.txt')
+OUTPUT_FILE_PATH = os.path.join(CURRENT_DIR, output_file_name)
 
 
-class EsExport(object):
+def export_es_data():
+    query_body = {
+        "query": {
+            "match_all": {}
+        },
+        "from": doc_from,
+        "size": doc_size
+    }
+    try:
+        es = Elasticsearch(es_host)
+        response = es.search(index=index_name,
+                             body=query_body,
+                             request_timeout=300)
+        print('hits: %s' % (response['hits']['total']))
+        print('used_time(ms): %s' % (response['took']))
+        if response['hits']['total'] > 0:
+            doc_hits = response['hits']['hits']
+            process_bar = ShowProcess(len(doc_hits))
+            print('start to write to file:')
+            for hit in doc_hits:
+                line = json.dumps(hit['_source'], encoding="utf-8", ensure_ascii=False)
+                write2file(line + '\n')
+                process_bar.show_process()
+            process_bar.close('Success in finishing... %s' % OUTPUT_FILE_PATH)
+    except TransportError as e:
+        if isinstance(e, ConnectionTimeout):
+            print('Read timed out!')
+        elif isinstance(e, ConnectionError):
+            print('Elasticsearch connection refused')
+        else:
+            print('System err')
+    except Exception as e:
+        print(e)
 
-    def __init__(self):
-        pass
 
-    def export_es_data(self):
-        query_body = {
-            "query": {
-                "match_all": {}
-            },
-            "from": doc_from,
-            "size": doc_size
-        }
-        try:
-            print('query from es, please wait...')
-            response = es.search(index=index_name,
-                                 body=query_body,
-                                 request_timeout=300)
-            print('hits: %s' % (response['hits']['total']))
-            print('used_time(ms): %s' % (response['took']))
-            if response['hits']['total'] > 0:
-                doc_hits = response['hits']['hits']
-                process_bar = ShowProcess(len(doc_hits))
-                print('start to write to file:')
-                for hit in doc_hits:
-                    line = json.dumps(hit['_source'], encoding="utf-8", ensure_ascii=False)
-                    self.write2file(line + '\n')
-                    process_bar.show_process()
-                process_bar.close('success in finishing... %s' % OUTPUT_FILE_PATH)
-        except TransportError as e:
-            if isinstance(e, ConnectionTimeout):
-                print('read timed out!')
-            elif isinstance(e, ConnectionError):
-                print('elasticsearch connection refused!')
-            else:
-                print('system err')
-        except Exception as e:
-            print(e)
-
-    @staticmethod
-    def write2file(content):
-        with open(OUTPUT_FILE_PATH, "a") as f:
-            f.write(content)
+def write2file(content):
+    with open(OUTPUT_FILE_PATH, "a") as f:
+        f.write(content)
 
 
 class ShowProcess(object):
@@ -107,5 +103,4 @@ class ShowProcess(object):
 
 
 if __name__ == "__main__":
-    es_export = EsExport()
-    es_export.export_es_data()
+    export_es_data()
