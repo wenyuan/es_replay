@@ -4,7 +4,7 @@
 向es中写入sqy业务的仿真数据
 数据直接构造,不用从别的地方下载
 
-*/1 * * * *  python /home/wenyuan/es_replay/send_data/send_sqy_data2es.py >/dev/null 2>&1
+*/1 * * * *  python /home/wenyuan/es_replay/send_data/send_monitor-sqy2es.py >/dev/null 2>&1
 """
 import copy
 import time
