@@ -16,13 +16,16 @@ from elasticsearch import Elasticsearch, helpers
 from elasticsearch.exceptions import *
 import sys
 import faker
+import pypinyin
+
+from utils.isp2en import isp2en
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 f = faker.Faker(locale='zh_CN')
 
 # ----------- 需要修改的参数 -----------
-es_host = '192.168.10.251'
+es_host = '192.168.10.201'
 token = '4a859fff6e5c4521aab187eee1cfceb8'
 appname = 'iprobe'
 doc_type = 'tcp'
@@ -32,7 +35,7 @@ index_name = 'cc-{appname}-{doc_type}-{token}-{suffix}'.format(
     token=token,
     suffix=time.strftime('%Y.%m.%d')
 )
-data_file_name = 'iprobe.data.txt'
+data_file_name = 'iprobe-tcp.txt'
 request_body_size = 100
 # ------------------------------------
 
@@ -95,8 +98,23 @@ def make_data(doc_list):
         # 插入ipv6字段
         doc['tcp']['src_ipv6'] = f.ipv6()
         doc['tcp']['dst_ipv6'] = f.ipv6()
+        # 中文转英文
+        src_country = doc['tcp']['src_ip']['country']
+        src_province = doc['tcp']['src_ip']['province']
+        city
+        isp
+        if src_province:
+            src_province = pinyin(src_province)
         current_doc_list.append(doc)
     return current_doc_list
+
+
+def pinyin(word):
+    word = unicode(word, 'utf-8')
+    s = ''
+    for i in pypinyin.pinyin(word, style=pypinyin.NORMAL):
+        s += '.'.join(i)
+    return s
 
 
 if __name__ == "__main__":
