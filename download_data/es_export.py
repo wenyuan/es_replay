@@ -16,11 +16,11 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 # ----------- 需要修改的参数 -----------
-es_host = '127.0.0.1'
-index_name = 'cc-gossip-internal-2018.07.31'
-output_file_name = 'snmp.txt'
+es_host = '192.168.10.201'
+index_name = 'cc-iprobe-udp-4a859fff6e5c4521aab187eee1cfceb8-2020.03.07'
+output_file_name = 'iprobe-udp.txt'
 doc_from = 0
-doc_size = 5000
+doc_size = 500
 # ------------------------------------
 
 CURRENT_DIR = reduce(lambda x, y: os.path.dirname(x), range(1), os.path.abspath(__file__))

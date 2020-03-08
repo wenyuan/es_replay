@@ -5,7 +5,7 @@
 数据模板来源(.txt文件)必须要是经过filter_data过滤后的
 因为有多个数据源,.txt文件统一都放在send_data/data目录下
 
-*/1 * * * *  python /home/wenyuan/es_replay/send_data/send_iprobe-tcp2es.py >/dev/null 2>&1
+*/1 * * * *  python /home/wenyuan/es_replay/send_data/send_iprobe-ssl2es.py >/dev/null 2>&1
 """
 import os
 import json
@@ -28,14 +28,14 @@ f = faker.Faker(locale='zh_CN')
 es_host = '192.168.10.201'
 token = '4a859fff6e5c4521aab187eee1cfceb8'
 appname = 'iprobe'
-doc_type = 'tcp'
+doc_type = 'ssl'
 index_name = 'cc-{appname}-{doc_type}-{token}-{suffix}'.format(
     appname=appname,
     doc_type=doc_type,
     token=token,
     suffix=time.strftime('%Y.%m.%d')
 )
-data_file_name = 'iprobe-tcp.txt'
+data_file_name = 'iprobe-ssl.txt'
 request_body_size = 100
 # ------------------------------------
 
@@ -96,34 +96,34 @@ def make_data(doc_list):
         doc['@timestamp'] = timestamp_in_millisecond
         doc['dawn_ts'] = timestamp_in_millisecond * 1000
         # 插入ipv6字段
-        doc['tcp']['src_ipv6'] = f.ipv6()
-        doc['tcp']['dst_ipv6'] = f.ipv6()
+        doc['ssl']['src_ipv6'] = f.ipv6()
+        doc['ssl']['dst_ipv6'] = f.ipv6()
         # 中文转英文
-        src_country = doc['tcp']['src_ip'].get('country', None)
-        src_province = doc['tcp']['src_ip'].get('province', None)
-        src_city = doc['tcp']['src_ip'].get('city', None)
-        src_isp = doc['tcp']['src_ip'].get('isp', None)
+        src_country = doc['ssl']['src_ip'].get('country', None)
+        src_province = doc['ssl']['src_ip'].get('province', None)
+        src_city = doc['ssl']['src_ip'].get('city', None)
+        src_isp = doc['ssl']['src_ip'].get('isp', None)
         if src_country:
-            doc['tcp']['src_ip']['country'] = pinyin(src_country)
+            doc['ssl']['src_ip']['country'] = pinyin(src_country)
         if src_province:
-            doc['tcp']['src_ip']['province'] = pinyin(src_province)
+            doc['ssl']['src_ip']['province'] = pinyin(src_province)
         if src_city:
-            doc['tcp']['src_ip']['city'] = pinyin(src_city)
+            doc['ssl']['src_ip']['city'] = pinyin(src_city)
         if src_isp:
-            doc['tcp']['src_ip']['isp'] = isp2en(src_isp)
+            doc['ssl']['src_ip']['isp'] = isp2en(src_isp)
 
-        dst_country = doc['tcp']['dst_ip'].get('country', None)
-        dst_province = doc['tcp']['dst_ip'].get('province', None)
-        dst_city = doc['tcp']['dst_ip'].get('city', None)
-        dst_isp = doc['tcp']['dst_ip'].get('isp', None)
+        dst_country = doc['ssl']['dst_ip'].get('country', None)
+        dst_province = doc['ssl']['dst_ip'].get('province', None)
+        dst_city = doc['ssl']['dst_ip'].get('city', None)
+        dst_isp = doc['ssl']['dst_ip'].get('isp', None)
         if dst_country:
-            doc['tcp']['dst_ip']['country'] = pinyin(dst_country)
+            doc['ssl']['dst_ip']['country'] = pinyin(dst_country)
         if dst_province:
-            doc['tcp']['dst_ip']['province'] = pinyin(dst_province)
+            doc['ssl']['dst_ip']['province'] = pinyin(dst_province)
         if dst_city:
-            doc['tcp']['dst_ip']['city'] = pinyin(dst_city)
+            doc['ssl']['dst_ip']['city'] = pinyin(dst_city)
         if dst_isp:
-            doc['tcp']['dst_ip']['isp'] = isp2en(dst_isp)
+            doc['ssl']['dst_ip']['isp'] = isp2en(dst_isp)
 
         current_doc_list.append(doc)
     return current_doc_list
