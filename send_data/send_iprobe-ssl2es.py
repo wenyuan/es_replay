@@ -98,7 +98,7 @@ def make_data(doc_list):
         # 插入ipv6字段
         doc['ssl']['src_ipv6'] = f.ipv6()
         doc['ssl']['dst_ipv6'] = f.ipv6()
-        
+
         current_doc_list.append(doc)
     return current_doc_list
 
