@@ -98,33 +98,7 @@ def make_data(doc_list):
         # 插入ipv6字段
         doc['ssl']['src_ipv6'] = f.ipv6()
         doc['ssl']['dst_ipv6'] = f.ipv6()
-        # 中文转英文
-        src_country = doc['ssl']['src_ip'].get('country', None)
-        src_province = doc['ssl']['src_ip'].get('province', None)
-        src_city = doc['ssl']['src_ip'].get('city', None)
-        src_isp = doc['ssl']['src_ip'].get('isp', None)
-        if src_country:
-            doc['ssl']['src_ip']['country'] = pinyin(src_country)
-        if src_province:
-            doc['ssl']['src_ip']['province'] = pinyin(src_province)
-        if src_city:
-            doc['ssl']['src_ip']['city'] = pinyin(src_city)
-        if src_isp:
-            doc['ssl']['src_ip']['isp'] = isp2en(src_isp)
-
-        dst_country = doc['ssl']['dst_ip'].get('country', None)
-        dst_province = doc['ssl']['dst_ip'].get('province', None)
-        dst_city = doc['ssl']['dst_ip'].get('city', None)
-        dst_isp = doc['ssl']['dst_ip'].get('isp', None)
-        if dst_country:
-            doc['ssl']['dst_ip']['country'] = pinyin(dst_country)
-        if dst_province:
-            doc['ssl']['dst_ip']['province'] = pinyin(dst_province)
-        if dst_city:
-            doc['ssl']['dst_ip']['city'] = pinyin(dst_city)
-        if dst_isp:
-            doc['ssl']['dst_ip']['isp'] = isp2en(dst_isp)
-
+        
         current_doc_list.append(doc)
     return current_doc_list
 

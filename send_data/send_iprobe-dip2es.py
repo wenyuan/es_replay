@@ -99,19 +99,6 @@ def make_data(doc_list):
         doc['dip']['src_ipv6'] = f.ipv6()
         doc['dip']['dst_ipv6'] = f.ipv6()
         # 中文转英文
-        src_country = doc['dip']['src_ip'].get('country', None)
-        src_province = doc['dip']['src_ip'].get('province', None)
-        src_city = doc['dip']['src_ip'].get('city', None)
-        src_isp = doc['dip']['src_ip'].get('isp', None)
-        if src_country:
-            doc['dip']['src_ip']['country'] = pinyin(src_country)
-        if src_province:
-            doc['dip']['src_ip']['province'] = pinyin(src_province)
-        if src_city:
-            doc['dip']['src_ip']['city'] = pinyin(src_city)
-        if src_isp:
-            doc['dip']['src_ip']['isp'] = isp2en(src_isp)
-
         dst_country = doc['dip']['dst_ip'].get('country', None)
         dst_province = doc['dip']['dst_ip'].get('province', None)
         dst_city = doc['dip']['dst_ip'].get('city', None)
