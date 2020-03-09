@@ -5,7 +5,7 @@
 数据模板来源(.txt文件)必须要是经过filter_data过滤后的
 因为有多个数据源,.txt文件统一都放在send_data/data目录下
 
-*/1 * * * *  python /home/wenyuan/es_replay/send_data/send_iprobe-http2es.py >/dev/null 2>&1
+*/1 * * * *  cd /home/wenyuan/es_replay/send_data/ && python send_iprobe-http2es.py >/dev/null 2>&1
 """
 import os
 import json
