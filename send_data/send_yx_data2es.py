@@ -54,14 +54,17 @@ class SendSnmpData2Es(object):
             doc_list = []
             line = f.readline()
             while line:
-                line = line.strip('\n')
-                doc_content = json.loads(line, encoding='utf-8')
-                doc_list.append(doc_content)
-                if len(doc_list) >= request_body_size:
-                    current_doc_list = self.make_data(doc_list)
-                    self.send_data2es(current_doc_list)
-                    doc_list = []
-                line = f.readline()
+                try:
+                    line = line.strip('\n')
+                    doc_content = json.loads(line, encoding='utf-8')
+                    doc_list.append(doc_content)
+                    if len(doc_list) >= request_body_size:
+                        current_doc_list = self.make_data(doc_list)
+                        self.send_data2es(current_doc_list)
+                        doc_list = []
+                    line = f.readline()
+                except Exception as e:
+                    line = f.readline()
             if doc_list:
                 current_doc_list = self.make_data(doc_list)
                 self.send_data2es(current_doc_list)
