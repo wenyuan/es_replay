@@ -18,7 +18,7 @@ import sys
 import faker
 import pypinyin
 
-from utils.isp2en import isp2en
+from utils import isp2en
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
