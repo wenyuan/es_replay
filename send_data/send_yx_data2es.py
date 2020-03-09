@@ -44,7 +44,7 @@ if not os.path.exists(DATA_DIR):
 DATA_FILE_PATH = os.path.join(DATA_DIR, data_file_name)
 
 
-class SendSnmpData2Es(object):
+class SendYxlinkData2Es(object):
 
     def __init__(self):
         pass
@@ -103,5 +103,5 @@ class SendSnmpData2Es(object):
 
 
 if __name__ == "__main__":
-    send_snmp_data2es = SendSnmpData2Es()
-    send_snmp_data2es.execute_task()
+    send_yxlink_data2es = SendYxlinkData2Es()
+    send_yxlink_data2es.execute_task()
