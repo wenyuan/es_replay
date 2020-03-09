@@ -32,6 +32,7 @@ CURRENT_DIR = reduce(lambda x, y: os.path.dirname(x), range(1), os.path.abspath(
 DATA_DIR = os.path.join(CURRENT_DIR, 'data')
 data_file_names = os.listdir(DATA_DIR)
 # print data_file_names
+data_file_names = filter(lambda x: 'yxlink' in x, data_file_names)
 index = time.localtime()[6]
 print index
 data_file_name = data_file_names[index]
