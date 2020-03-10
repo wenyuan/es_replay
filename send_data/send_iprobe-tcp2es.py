@@ -125,6 +125,42 @@ def make_data(doc_list):
         if dst_isp:
             doc['tcp']['dst_ip']['isp'] = isp2en(dst_isp)
 
+        analysis_dst_country = doc['analysis']['dst']['ip'].get('country', None)
+        analysis_dst_province = doc['analysis']['dst']['ip'].get('province', None)
+        analysis_dst_city = doc['analysis']['dst']['ip'].get('city', None)
+        analysis_dst_isp = doc['analysis']['dst']['ip'].get('isp', None)
+        if analysis_dst_country:
+            doc['analysis']['dst']['ip']['country'] = pinyin(analysis_dst_country)
+        if analysis_dst_province:
+            doc['analysis']['dst']['ip']['province'] = pinyin(analysis_dst_province)
+        if dst_city:
+            doc['analysis']['dst']['ip']['city'] = pinyin(analysis_dst_city)
+        if dst_isp:
+            doc['analysis']['dst']['ip']['isp'] = isp2en(analysis_dst_isp)
+
+        analysis_nat_country = doc['analysis'].get('nat', {}).get('ip', {}).get('country', None)
+        analysis_nat_province = doc['analysis'].get('nat', {}).get('ip', {}).get('province', None)
+        analysis_nat_city = doc['analysis'].get('nat', {}).get('ip', {}).get('city', None)
+        analysis_nat_district = doc['analysis'].get('nat', {}).get('ip', {}).get('district', None)
+        analysis_nat_isp = doc['analysis'].get('nat', {}).get('ip', {}).get('isp', None)
+        if analysis_nat_country:
+            doc['analysis']['nat']['ip']['country'] = pinyin(analysis_nat_country)
+        if analysis_nat_province:
+            doc['analysis']['nat']['ip']['province'] = pinyin(analysis_nat_province)
+        if analysis_nat_city:
+            doc['analysis']['nat']['ip']['city'] = pinyin(analysis_nat_city)
+        if analysis_nat_district:
+            doc['analysis']['nat']['ip']['district'] = pinyin(analysis_nat_district)
+        if analysis_nat_isp:
+            doc['analysis']['nat']['ip']['isp'] = isp2en(analysis_nat_isp)
+
+        doc['analysis']['user'] = dict(
+            mail=f.email(),
+            mobile=f.phone_number(),
+            realName=pinyin(f.name()),
+            userId=doc['analysis']['user']['userId']
+        )
+
         current_doc_list.append(doc)
     return current_doc_list
 

@@ -4,7 +4,7 @@
 向es中回放yxlink-vul_list数据
 模板数据.txt文件统一都放在send_data/data目录下
 每天晚上23:50分执行
-50   23 * * *   python /home/wenyuan/es_replay/send_data/send_yxlink-vul_list2es.py >/dev/null 2>&1
+50 23 * * * python /home/wenyuan/es_replay/send_data/send_yxlink-vul_list2es.py >/dev/null 2>&1
 """
 import os
 import json
